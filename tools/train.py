@@ -183,19 +183,35 @@ def main():
     if args.gpus is None and args.gpu_ids is None:
         cfg.gpu_ids = [args.gpu_id]
 
-    if args.autoscale_lr:
-        # apply the linear scaling rule (https://arxiv.org/abs/1706.02677)
-        cfg.optimizer['lr'] = cfg.optimizer['lr'] * len(cfg.gpu_ids) / 8
+    # NOTE: autoscale lr will be applied after determining world_size
 
     # init distributed env first, since logger depends on the dist info.
     if args.launcher == 'none':
         distributed = False
+        world_size = 1
     else:
         distributed = True
         init_dist(args.launcher, **cfg.dist_params)
         # re-set gpu_ids with distributed training mode
         _, world_size = get_dist_info()
         cfg.gpu_ids = range(world_size)
+
+    # apply autoscale lr after world_size is determined
+    if args.autoscale_lr:
+        # scale lr by total effective batch size relative to a base batch size
+        # lr = lr * (world_size * samples_per_gpu) / base_batch_size
+        base_batch_size = 32
+        samples_per_gpu = 1
+        try:
+            # prefer top-level data.samples_per_gpu if present
+            if isinstance(cfg.data, dict):
+                samples_per_gpu = cfg.data.get('samples_per_gpu', samples_per_gpu)
+        except Exception:
+            # fall back silently if structure differs
+            pass
+        print('world_size:', world_size)
+        print('samples_per_gpu:', samples_per_gpu)
+        cfg.optimizer['lr'] = cfg.optimizer['lr'] * world_size * samples_per_gpu / base_batch_size
 
     # create work_dir
     mmcv.mkdir_or_exist(osp.abspath(cfg.work_dir))
