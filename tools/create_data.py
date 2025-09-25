@@ -87,7 +87,7 @@ def nuscenes_data_prep(root_path,
     nuscenes_converter.export_2d_annotation(
         root_path, info_val_path, version=version)
     create_groundtruth_database(dataset_name, root_path, info_prefix,
-                                'data/nusc_new/nuscenes_infos_train.pkl')
+                                'data/nuscenes/nuscenes_infos_train.pkl')
 
 
 def lyft_data_prep(root_path, info_prefix, version, max_sweeps=10):
@@ -246,7 +246,6 @@ if __name__ == '__main__':
             out_dir=args.out_dir,
             with_plane=args.with_plane)
     elif args.dataset == 'nuscenes' and args.version != 'v1.0-mini':
-        '''
         train_version = f'{args.version}-trainval'
         nuscenes_data_prep(
             root_path=args.root_path,
@@ -255,15 +254,14 @@ if __name__ == '__main__':
             dataset_name='NuScenesDataset',
             out_dir=args.out_dir,
             max_sweeps=args.max_sweeps)
-        '''
-        test_version = f'{args.version}-test'
-        nuscenes_data_prep(
-            root_path=args.root_path,
-            info_prefix=args.extra_tag,
-            version=test_version,
-            dataset_name='NuScenesDataset',
-            out_dir=args.out_dir,
-            max_sweeps=args.max_sweeps)
+        # test_version = f'{args.version}-test'
+        # nuscenes_data_prep(
+        #     root_path=args.root_path,
+        #     info_prefix=args.extra_tag,
+        #     version=test_version,
+        #     dataset_name='NuScenesDataset',
+        #     out_dir=args.out_dir,
+        #     max_sweeps=args.max_sweeps)
     elif args.dataset == 'nuscenes' and args.version == 'v1.0-mini':
         train_version = f'{args.version}'
         nuscenes_data_prep(
