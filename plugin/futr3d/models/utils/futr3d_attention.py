@@ -9,7 +9,7 @@ from mmcv.cnn.bricks.registry import (ATTENTION,
 from mmcv.cnn.bricks.transformer import (MultiScaleDeformableAttention,
                                          TransformerLayerSequence,
                                          build_transformer_layer_sequence)
-from mmcv.ops.multi_scale_deform_attn import MultiScaleDeformableAttnFunction
+from mmcv.ops.multi_scale_deform_attn import MultiScaleDeformableAttnFunction, multi_scale_deformable_attn_pytorch
 from mmcv.runner.base_module import BaseModule
 from mmcv.utils import IS_CUDA_AVAILABLE, IS_MLU_AVAILABLE
 from mmdet.models.utils.builder import TRANSFORMER
@@ -286,9 +286,14 @@ class FUTR3DAttention(BaseModule):
                     f' 2, but get {reference_points.shape[-1]} instead.')
             if ((IS_CUDA_AVAILABLE and value.is_cuda)
                     or (IS_MLU_AVAILABLE and value.is_mlu)):
-                output = MultiScaleDeformableAttnFunction.apply(
-                    value, spatial_shapes, level_start_index, sampling_locations,
-                    attention_weights, self.im2col_step)
+                if value.dtype == torch.float16:
+                    output = MultiScaleDeformableAttnFunction.apply(
+                        value.to(torch.float32), spatial_shapes, level_start_index, sampling_locations.to(torch.float32),
+                        attention_weights.to(torch.float32), self.im2col_step).to(torch.float16)
+                else:
+                    output = MultiScaleDeformableAttnFunction.apply(
+                        value, spatial_shapes, level_start_index, sampling_locations,
+                        attention_weights, self.im2col_step)
             else:
                 output = multi_scale_deformable_attn_pytorch(
                     value, spatial_shapes, sampling_locations, attention_weights)
@@ -351,9 +356,14 @@ class FUTR3DAttention(BaseModule):
                     f' 2, but get {reference_points.shape[-1]} instead.')
             if ((IS_CUDA_AVAILABLE and value.is_cuda)
                     or (IS_MLU_AVAILABLE and value.is_mlu)):
-                output = MultiScaleDeformableAttnFunction.apply(
-                    value, rad_spatial_shapes, rad_level_start_index, sampling_locations,
-                    attention_weights, self.im2col_step)
+                if value.dtype == torch.float16:
+                    output = MultiScaleDeformableAttnFunction.apply(
+                        value.to(torch.float32), rad_spatial_shapes, rad_level_start_index, sampling_locations.to(torch.float32),
+                        attention_weights.to(torch.float32), self.im2col_step).to(torch.float16)
+                else:
+                    output = MultiScaleDeformableAttnFunction.apply(
+                        value, rad_spatial_shapes, rad_level_start_index, sampling_locations,
+                        attention_weights, self.im2col_step)
             else:
                 output = multi_scale_deformable_attn_pytorch(
                     value, rad_spatial_shapes, sampling_locations, attention_weights)

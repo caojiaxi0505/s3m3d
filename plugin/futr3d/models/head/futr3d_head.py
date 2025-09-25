@@ -485,7 +485,7 @@ class FUTR3DHead(DETRHead):
         bbox_weights = torch.zeros_like(bbox_pred)
         bbox_weights[pos_inds] = 1.0
         
-        bbox_targets[pos_inds] = sampling_result.pos_gt_bboxes
+        bbox_targets[pos_inds] = sampling_result.pos_gt_bboxes.to(bbox_targets.dtype)
         return (labels, label_weights, bbox_targets, bbox_weights, pos_inds,
                 neg_inds)
 

@@ -23,5 +23,8 @@ class BBox3DL1Cost(object):
         Returns:
             torch.Tensor: bbox_cost value with weight
         """
-        bbox_cost = torch.cdist(bbox_pred, gt_bboxes, p=1)
+        if bbox_pred.dtype == torch.float16:
+            bbox_cost = torch.cdist(bbox_pred.float(), gt_bboxes.float(), p=1)
+        else:
+            bbox_cost = torch.cdist(bbox_pred, gt_bboxes, p=1)
         return bbox_cost * self.weight
