@@ -1,6 +1,6 @@
 _base_ = [
-    '../../../mmdetection3d/configs/_base_/datasets/nus-3d.py',
-    '../../../mmdetection3d/configs/_base_/default_runtime.py'
+    '../../../configs/_base_/datasets/nus-3d.py',
+    '../../../configs/_base_/default_runtime.py'
 ]
 
 plugin=True
@@ -189,7 +189,7 @@ data = dict(
         dataset=dict(
             type=dataset_type,
             data_root=data_root,
-            ann_file=data_root + 'nuscenes_infos_trainval.pkl',
+            ann_file=data_root + 'nuscenes_infos_train.pkl',
             pipeline=train_pipeline,
             classes=class_names,
             modality=input_modality,

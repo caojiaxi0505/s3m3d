@@ -1,6 +1,6 @@
 _base_ = [
-    '../../../mmdetection3d/configs/_base_/datasets/nus-3d.py',
-    '../../../mmdetection3d/configs/_base_/default_runtime.py'
+    '../../../configs/_base_/datasets/nus-3d.py',
+    '../../../configs/_base_/default_runtime.py'
 ]
 
 plugin=True
@@ -225,4 +225,4 @@ total_epochs = 24
 evaluation = dict(interval=2, pipeline=test_pipeline)
 
 runner = dict(type='EpochBasedRunner', max_epochs=total_epochs)
-load_from='pretrained/fcos3d.pth'
+load_from='ckpts/fcos3d.pth'
