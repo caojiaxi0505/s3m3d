@@ -5,3 +5,5 @@ work_dirs/
 **/__pycache__/
 CLAUDE.md
 GEMINI.md
+checkpoint/
+ckpts/
