@@ -200,7 +200,7 @@ def main():
     if args.autoscale_lr:
         # scale lr by total effective batch size relative to a base batch size
         # lr = lr * (world_size * samples_per_gpu) / base_batch_size
-        base_batch_size = 32
+        base_batch_size = 8
         samples_per_gpu = 1
         try:
             # prefer top-level data.samples_per_gpu if present
